@@ -80,6 +80,20 @@
 			message = "<B>[src]</B> drools."
 			m_type = 1
 
+		if ("smrut","smierdzi")
+			var/smrut = 'sound/misc/smrut.ogg'
+			var/offset = prob(50) ? -2 : 2
+			animate(src, pixel_x = pixel_y + offset, time = 0.2, loop = 105)
+			playsound(loc, smrut, 50, 1, -1)
+			message = "<B>[src]</B> zesral sie i smierdzi."
+			m_type = 2
+
+		if ("skurwysyn","skurwysynie")
+			var/krzyk = 'sound/misc/skurwysynie.ogg'
+			playsound(loc, krzyk, 50, 1, -1)
+			message = "<B>[src]</B> Krzyczy!."
+			m_type = 2
+
 		if ("faint","faints")
 			message = "<B>[src]</B> faints."
 			if(sleeping)
