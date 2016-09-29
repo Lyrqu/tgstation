@@ -72,8 +72,11 @@ Changes to the uplinks were made to discourage murderboning, the rest is the sam
 				#define MAP_OVERRIDE_FILES
 				#include "map_files\MiniStation\misc.dm"
 		        #include "map_files\MiniStation\cargopacks.dm"
+<<<<<<< HEAD
 		//      #include "map_files\MiniStation\telecomms.dm"
 		        #include "map_files\MiniStation\uplink_item.dm"
+=======
+>>>>>>> refs/remotes/tgstation/master
 		        #include "map_files\MiniStation\job\jobs.dm"
 		        #include "map_files\MiniStation\job\removed.dm"
 		#endif
