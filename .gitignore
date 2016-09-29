@@ -184,11 +184,3 @@ Temporary Items
 .apdisk
 
 *.before
-
-_maps/map_files/TgStation/tgstation.2.1.3.dmm
-_maps/map_files/MetaStation/MetaStation.v41G.dmm
-tgstation.dme
-code/modules/admin/admin_verbs.dm
-code/modules/research/designs/comp_board_designs.dm
-code/game/machinery/computer/buildandrepair.dm
-tgstation.dme
