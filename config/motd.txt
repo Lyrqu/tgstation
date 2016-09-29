@@ -3,3 +3,21 @@
 <h1>Welcome to Space Station 13!</h1>
 
 <i>This server is running a /tg/station 13 Git build.</i>
+<!-- Most valid html will work in here, excluding images. -->
+
+<h1>Welcome to Papa Station!</h1>
+
+<br>
+tab -przelaczanie hotkeyow
+<br>
+o - Chat OOC
+<br>
+t - mowienie w grze(; przed textem to mowienie przez radio)
+<br>
+q - upuszczenie przedmiotu z reki
+<br>
+z - uzycie przedmiotu w rece
+<br>
+x - zmiana reki
+<br>
+r - rzut przedmiotem z lapy

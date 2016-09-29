@@ -69,6 +69,15 @@
 		if ("help") //Ooh ah ooh ooh this is an exception to alphabetical ooh ooh.
 			src << "Help for monkey emotes. You can use these emotes with say \"*emote\":\n\naflap, airguitar, blink, blink_r, blush, bow-(none)/mob, burp, choke, chuckle, clap, collapse, cough, dance, deathgasp, drool, flap, frown, gasp, gnarl, giggle, glare-(none)/mob, grin, jump, laugh, look, me, moan, nod, paw, point-(atom), roar, roll, scream, scratch, screech, shake, shiver, sigh, sign-#, sit, smile, sneeze, sniff, snore, stare-(none)/mob, sulk, sway, tail, tremble, twitch, twitch_s, wave whimper, wink, yawn"
 
+		if ("KRAAA","kra")
+			if (!src.restrained())
+				var/maupa = 'sound/misc/kraaa.ogg'
+				var/offset = prob(50) ? -2 : 2
+				animate(src, pixel_x = pixel_y + offset, time = 0.2, loop = 105)
+				playsound(loc, maupa, 50, 1, -1)
+				message = "<B>[src]</B> LECI CI WPIERDOLIC"
+				m_type = 2
+
 		else
 			..()
 
