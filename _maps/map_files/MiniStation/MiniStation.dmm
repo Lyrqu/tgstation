@@ -186,7 +186,7 @@
 "dD" = (/obj/machinery/atmospherics/pipe/simple/supply/hidden{dir = 9},/turf/open/floor/carpet,/area/chapel/main)
 "dE" = (/obj/structure/table/wood,/obj/item/voodoo,/obj/machinery/atmospherics/pipe/simple/scrubbers,/turf/open/floor/carpet,/area/chapel/main)
 "dF" = (/obj/structure/table/wood,/obj/item/weapon/reagent_containers/food/snacks/pie/cream,/obj/item/weapon/reagent_containers/food/snacks/pie/cream,/obj/item/weapon/reagent_containers/food/snacks/pie/cream,/turf/open/floor/wood,/area/chapel/office)
-"dG" = (/obj/structure/closet/coffin,/turf/open/floor/wood,/area/chapel/office)
+"dG" = (/obj/structure/closet/coffin,/obj/machinery/airalarm{desc = "This particular atmos control unit appears to have no access restrictions."; dir = 8; icon_state = "alarm0"; locked = 0; name = "all-access air alarm"; pixel_x = 24; req_access = "0"; req_one_access = "0"},/turf/open/floor/wood,/area/chapel/office)
 "dH" = (/obj/structure/lattice,/turf/open/space,/area/space)
 "dI" = (/obj/structure/table/reinforced,/obj/item/weapon/wrench,/obj/item/device/assembly/timer,/obj/item/device/assembly/signaler,/obj/item/device/assembly/signaler,/turf/open/floor/plasteel,/area/bridge)
 "dJ" = (/obj/structure/table/reinforced,/obj/item/device/aicard,/obj/item/device/multitool,/turf/open/floor/plasteel,/area/bridge)
