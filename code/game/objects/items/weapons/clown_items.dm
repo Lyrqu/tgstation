@@ -208,7 +208,7 @@
 	force = 1
 	throwforce = 5
 	var/spam_flag = 0
-	var/list/sounds_sax = list('sound/items/sax.ogg', 'sound/items/sax2.ogg','sound/items/sax3.ogg','sound/items/sax4.ogg','sound/items/sax5.ogg')
+	var/list/sounds_sax = list('sound/items/sax.ogg', 'sound/items/sax2.ogg','sound/items/sax3.ogg','sound/items/sax4.ogg','sound/items/sax5.ogg','sound/items/sax6.ogg','sound/items/sax7.ogg' )
 	var/cooldowntime = 100
 
 /obj/item/saxophone/attack_self(mob/user as mob)
