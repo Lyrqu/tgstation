@@ -4642,6 +4642,10 @@
 /area/centcom/holding)
 "ow" = (
 /obj/structure/window/reinforced{
+<<<<<<< HEAD
+=======
+	resistance_flags = 3;
+>>>>>>> refs/remotes/tgstation/master
 	color = "#008000";
 	dir = 1
 	},
@@ -4660,6 +4664,10 @@
 /area/centcom/holding)
 "oz" = (
 /obj/structure/shuttle/engine/heater{
+<<<<<<< HEAD
+=======
+	resistance_flags = 3
+>>>>>>> refs/remotes/tgstation/master
 	},
 /turf/open/floor/plating/lava,
 /area/wizard_station)

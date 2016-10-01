@@ -15,10 +15,6 @@
 // BEGIN_INCLUDE
 #include "_maps\__MAP_DEFINES.dm"
 #include "_maps\ministation.dm"
-#include "_maps\RandomRuins\SpaceRuins\abandonedteleporter.dmm"
-#include "_maps\RandomRuins\SpaceRuins\bigderelict1.dmm"
-#include "_maps\RandomRuins\SpaceRuins\spacebar.dmm"
-#include "_maps\RandomRuins\SpaceRuins\TheDerelict.dmm"
 #include "code\_compile_options.dm"
 #include "code\hub.dm"
 #include "code\world.dm"
