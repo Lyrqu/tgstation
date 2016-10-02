@@ -256,4 +256,7 @@
 	desc = "A direction sign, pointing out which way the escape shuttle dock is."
 	icon_state = "direction_evac"
 
-
+/obj/structure/sign/cold
+	name = "cold"
+	desc = "Connector port for cooling gas."
+	icon_state = "cold"
