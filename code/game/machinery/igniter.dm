@@ -2,29 +2,30 @@
 	name = "igniter"
 	desc = "It's useful for igniting plasma."
 	icon = 'icons/obj/stationobjs.dmi'
-	icon_state = "igniter1"
+	icon_state = "igniter0"
 	var/id = null
-	var/on = 1
-	anchored = 1
-	use_power = 1
+	var/on = FALSE
+	anchored = TRUE
+	use_power = IDLE_POWER_USE
 	idle_power_usage = 2
 	active_power_usage = 4
-
-/obj/machinery/igniter/attack_ai(mob/user)
-	return src.attack_hand(user)
-
-/obj/machinery/igniter/attack_paw(mob/user)
-	return src.attack_hand(user)
+	max_integrity = 300
+	armor = list("melee" = 50, "bullet" = 30, "laser" = 70, "energy" = 50, "bomb" = 20, "bio" = 0, "rad" = 0, "fire" = 100, "acid" = 70)
+	resistance_flags = FIRE_PROOF
+	
+/obj/machinery/igniter/on
+	on = TRUE
+	icon_state = "igniter1"
 
 /obj/machinery/igniter/attack_hand(mob/user)
-	if(..())
+	. = ..()
+	if(.)
 		return
 	add_fingerprint(user)
 
 	use_power(50)
-	src.on = !( src.on )
-	src.icon_state = text("igniter[]", src.on)
-	return
+	on = !( on )
+	icon_state = "igniter[on]"
 
 /obj/machinery/igniter/process()	//ugh why is this even in process()?
 	if (src.on && !(stat & NOPOWER) )
@@ -33,8 +34,8 @@
 			location.hotspot_expose(1000,500,1)
 	return 1
 
-/obj/machinery/igniter/New()
-	..()
+/obj/machinery/igniter/Initialize()
+	. = ..()
 	icon_state = "igniter[on]"
 
 /obj/machinery/igniter/power_change()
@@ -55,17 +56,17 @@
 	var/last_spark = 0
 	var/base_state = "migniter"
 	var/datum/effect_system/spark_spread/spark_system
-	anchored = 1
+	anchored = TRUE
+	resistance_flags = FIRE_PROOF
 
-/obj/machinery/sparker/New()
-	..()
+/obj/machinery/sparker/Initialize()
+	. = ..()
 	spark_system = new /datum/effect_system/spark_spread
 	spark_system.set_up(2, 1, src)
 	spark_system.attach(src)
 
 /obj/machinery/sparker/Destroy()
-	qdel(spark_system)
-	spark_system = null
+	QDEL_NULL(spark_system)
 	return ..()
 
 /obj/machinery/sparker/power_change()
@@ -78,8 +79,8 @@
 		icon_state = "[base_state]-p"
 //		src.sd_SetLuminosity(0)
 
-/obj/machinery/sparker/attackby(obj/item/weapon/W, mob/user, params)
-	if (istype(W, /obj/item/weapon/screwdriver))
+/obj/machinery/sparker/attackby(obj/item/W, mob/user, params)
+	if (istype(W, /obj/item/screwdriver))
 		add_fingerprint(user)
 		src.disable = !src.disable
 		if (src.disable)
@@ -118,8 +119,6 @@
 	return 1
 
 /obj/machinery/sparker/emp_act(severity)
-	if(stat & (BROKEN|NOPOWER))
-		..(severity)
-		return
-	ignite()
-	..(severity)
+	if(!(stat & (BROKEN|NOPOWER)))
+		ignite()
+	..()

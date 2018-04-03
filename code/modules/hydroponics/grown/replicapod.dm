@@ -12,7 +12,6 @@
 	maturation = 10
 	production = 1
 	yield = 1 //seeds if there isn't a dna inside
-	oneharvest = 1
 	potency = 30
 	var/ckey = null
 	var/realName = null
@@ -21,10 +20,11 @@
 	var/blood_type = null
 	var/list/features = null
 	var/factions = null
+	var/list/traits = null
 	var/contains_sample = 0
 
-/obj/item/seeds/replicapod/attackby(obj/item/weapon/W, mob/user, params)
-	if(istype(W,/obj/item/weapon/reagent_containers/syringe))
+/obj/item/seeds/replicapod/attackby(obj/item/W, mob/user, params)
+	if(istype(W, /obj/item/reagent_containers/syringe))
 		if(!contains_sample)
 			for(var/datum/reagent/blood/bloodSample in W.reagents.reagent_list)
 				if(bloodSample.data["mind"] && bloodSample.data["cloneable"] == 1)
@@ -35,14 +35,16 @@
 					blood_type = bloodSample.data["blood_type"]
 					features = bloodSample.data["features"]
 					factions = bloodSample.data["factions"]
+					traits = bloodSample.data["traits"]
 					W.reagents.clear_reagents()
-					user << "<span class='notice'>You inject the contents of the syringe into the seeds.</span>"
+					to_chat(user, "<span class='notice'>You inject the contents of the syringe into the seeds.</span>")
 					contains_sample = 1
 				else
-					user << "<span class='warning'>The seeds reject the sample!</span>"
+					to_chat(user, "<span class='warning'>The seeds reject the sample!</span>")
 		else
-			user << "<span class='warning'>The seeds already contain a genetic sample!</span>"
-	..()
+			to_chat(user, "<span class='warning'>The seeds already contain a genetic sample!</span>")
+	else
+		return ..()
 
 /obj/item/seeds/replicapod/get_analyzer_text()
 	var/text = ..()
@@ -55,9 +57,9 @@
 	var/obj/machinery/hydroponics/parent = loc
 	var/make_podman = 0
 	var/ckey_holder = null
-	if(config.revival_pod_plants)
+	if(CONFIG_GET(flag/revival_pod_plants))
 		if(ckey)
-			for(var/mob/M in player_list)
+			for(var/mob/M in GLOB.player_list)
 				if(isobserver(M))
 					var/mob/dead/observer/O = M
 					if(O.ckey == ckey && O.can_reenter_corpse)
@@ -71,8 +73,8 @@
 							make_podman = !L.hellbound
 						break
 		else //If the player has ghosted from his corpse before blood was drawn, his ckey is no longer attached to the mob, so we need to match up the cloned player through the mind key
-			for(var/mob/M in player_list)
-				if(mind && M.mind && ckey(M.mind.key) == ckey(mind.key) && M.ckey && M.client && M.stat == 2 && !M.suiciding)
+			for(var/mob/M in GLOB.player_list)
+				if(mind && M.mind && ckey(M.mind.key) == ckey(mind.key) && M.ckey && M.client && M.stat == DEAD && !M.suiciding)
 					if(isobserver(M))
 						var/mob/dead/observer/O = M
 						if(!O.can_reenter_corpse)
@@ -99,15 +101,18 @@
 		podman.faction |= factions
 		if(!features["mcolor"])
 			features["mcolor"] = "#59CE00"
-		podman.hardset_dna(null,null,podman.real_name,blood_type,/datum/species/pod,features)//Discard SE's and UI's, podman cloning is inaccurate, and always make them a podman
+		for(var/V in traits)
+			new V(podman)
+		podman.hardset_dna(null,null,podman.real_name,blood_type, new /datum/species/pod,features)//Discard SE's and UI's, podman cloning is inaccurate, and always make them a podman
 		podman.set_cloned_appearance()
 
 	else //else, one packet of seeds. maybe two
 		var/seed_count = 1
 		if(prob(getYield() * 20))
 			seed_count++
+		var/output_loc = parent.Adjacent(user) ? user.loc : parent.loc //needed for TK
 		for(var/i=0,i<seed_count,i++)
 			var/obj/item/seeds/replicapod/harvestseeds = src.Copy()
-			harvestseeds.forceMove(parent.loc)
+			harvestseeds.forceMove(output_loc)
 
 	parent.update_tray()

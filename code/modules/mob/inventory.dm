@@ -121,6 +121,19 @@
 			return I
 	return FALSE
 
+//Checks if we're holding a tool that has given quality
+//Returns the tool that has the best version of this quality
+/mob/proc/is_holding_tool_quality(quality)
+	var/obj/item/best_item
+	var/best_quality = INFINITY
+
+	for(var/obj/item/I in held_items)
+		if(I.tool_behaviour == quality && I.toolspeed < best_quality)
+			best_item = I
+			best_quality = I.toolspeed
+
+	return best_item
+
 
 //To appropriately fluff things like "they are holding [I] in their [get_held_index_name(get_held_index_of_item(I))]"
 //Can be overriden to pass off the fluff to something else (eg: science allowing people to add extra robotic limbs, and having this proc react to that
@@ -148,17 +161,25 @@
 /mob/proc/can_equip(obj/item/I, slot, disable_warning = 0)
 	return FALSE
 
-
-/mob/proc/put_in_hand(obj/item/I, hand_index)
+/mob/proc/can_put_in_hand(I, hand_index)
+	if(hand_index > held_items.len)
+		return FALSE
 	if(!put_in_hand_check(I))
 		return FALSE
 	if(!has_hand_for_held_index(hand_index))
 		return FALSE
-	var/obj/item/curr = held_items[hand_index]
-	if(!curr)
-		I.loc = src
+	return !held_items[hand_index]
+
+/mob/proc/put_in_hand(obj/item/I, hand_index, forced = FALSE)
+	if(forced || can_put_in_hand(I, hand_index))
+		if(hand_index == null)
+			return FALSE
+		if(get_item_for_held_index(hand_index) != null)
+			dropItemToGround(get_item_for_held_index(hand_index), force = TRUE)
+		I.forceMove(src)
 		held_items[hand_index] = I
 		I.layer = ABOVE_HUD_LAYER
+		I.plane = ABOVE_HUD_PLANE
 		I.equipped(src, slot_hands)
 		if(I.pulledby)
 			I.pulledby.stop_pulling()
@@ -167,7 +188,6 @@
 		I.pixel_y = initial(I.pixel_y)
 		return hand_index || TRUE
 	return FALSE
-
 
 //Puts the item into the first available left hand if possible and calls all necessary triggers/updates. returns 1 on success.
 /mob/proc/put_in_l_hand(obj/item/I)
@@ -180,7 +200,7 @@
 
 
 /mob/proc/put_in_hand_check(obj/item/I)
-	if(lying && !(I.flags&ABSTRACT))
+	if(lying && !(I.flags_1&ABSTRACT_1))
 		return FALSE
 	if(!istype(I))
 		return FALSE
@@ -197,12 +217,36 @@
 	return put_in_hand(I, get_inactive_hand_index())
 
 
-//Puts the item our active hand if possible. Failing that it tries our inactive hand. Returns TRUE on success.
+//Puts the item our active hand if possible. Failing that it tries other hands. Returns TRUE on success.
 //If both fail it drops it on the floor and returns FALSE.
 //This is probably the main one you need to know :)
-/mob/proc/put_in_hands(obj/item/I, del_on_fail = FALSE)
+/mob/proc/put_in_hands(obj/item/I, del_on_fail = FALSE, merge_stacks = TRUE)
 	if(!I)
 		return FALSE
+
+	// If the item is a stack and we're already holding a stack then merge
+	if (istype(I, /obj/item/stack))
+		var/obj/item/stack/I_stack = I
+		var/obj/item/stack/active_stack = get_active_held_item()
+
+		if (I_stack.zero_amount())
+			return FALSE
+
+		if (merge_stacks)
+			if (istype(active_stack) && istype(I_stack, active_stack.merge_type))
+				if (I_stack.merge(active_stack))
+					to_chat(usr, "<span class='notice'>Your [active_stack.name] stack now contains [active_stack.get_amount()] [active_stack.singular_name]\s.</span>")
+					return TRUE
+			else
+				var/obj/item/stack/inactive_stack = get_inactive_held_item()
+				if (istype(inactive_stack) && istype(I_stack, inactive_stack.merge_type))
+					if (I_stack.merge(inactive_stack))
+						to_chat(usr, "<span class='notice'>Your [inactive_stack.name] stack now contains [inactive_stack.get_amount()] [inactive_stack.singular_name]\s.</span>")
+						return TRUE
+
+	if(put_in_active_hand(I))
+		return TRUE
+
 	var/hand = get_empty_held_index_for_side("l")
 	if(!hand)
 		hand =  get_empty_held_index_for_side("r")
@@ -212,50 +256,63 @@
 	if(del_on_fail)
 		qdel(I)
 		return FALSE
-	I.forceMove(get_turf(src))
+	I.forceMove(drop_location())
 	I.layer = initial(I.layer)
+	I.plane = initial(I.plane)
 	I.dropped(src)
 	return FALSE
 
-
-/mob/proc/put_in_hands_or_del(obj/item/I)
-	return put_in_hands(I, TRUE)
-
-
-/mob/proc/drop_item_v()		//this is dumb.
-	if(stat == CONSCIOUS && isturf(loc))
-		return drop_item()
-	return FALSE
-
-
 /mob/proc/drop_all_held_items()
-	if(!loc || !loc.allow_drop())
-		return
+	. = FALSE
 	for(var/obj/item/I in held_items)
-		unEquip(I)
-
-//Drops the item in our active hand.
-/mob/proc/drop_item()
-	if(!loc || !loc.allow_drop())
-		return
-	var/obj/item/held = get_active_held_item()
-	return unEquip(held)
-
+		. |= dropItemToGround(I)
 
 //Here lie drop_from_inventory and before_item_take, already forgotten and not missed.
 
 /mob/proc/canUnEquip(obj/item/I, force)
 	if(!I)
 		return TRUE
-	if((I.flags & NODROP) && !force)
+	if((I.flags_1 & NODROP_1) && !force)
 		return FALSE
 	return TRUE
 
-/mob/proc/unEquip(obj/item/I, force) //Force overrides NODROP for things like wizarditis and admin undress.
-	if(!I) //If there's nothing to drop, the drop is automatically succesfull. If(unEquip) should generally be used to check for NODROP.
+/mob/proc/putItemFromInventoryInHandIfPossible(obj/item/I, hand_index, force_removal = FALSE)
+	if(!can_put_in_hand(I, hand_index))
+		return FALSE
+	if(!temporarilyRemoveItemFromInventory(I, force_removal))
+		return FALSE
+	I.remove_item_from_storage(src)
+	if(!put_in_hand(I, hand_index))
+		qdel(I)
+		CRASH("Assertion failure: putItemFromInventoryInHandIfPossible") //should never be possible
+	return TRUE
+
+//The following functions are the same save for one small difference
+
+//for when you want the item to end up on the ground
+//will force move the item to the ground and call the turf's Entered
+/mob/proc/dropItemToGround(obj/item/I, force = FALSE)
+	return doUnEquip(I, force, drop_location(), FALSE)
+
+//for when the item will be immediately placed in a loc other than the ground
+/mob/proc/transferItemToLoc(obj/item/I, newloc = null, force = FALSE)
+	return doUnEquip(I, force, newloc, FALSE)
+
+//visibly unequips I but it is NOT MOVED AND REMAINS IN SRC
+//item MUST BE FORCEMOVE'D OR QDEL'D
+/mob/proc/temporarilyRemoveItemFromInventory(obj/item/I, force = FALSE, idrop = TRUE)
+	return doUnEquip(I, force, null, TRUE, idrop)
+
+//DO NOT CALL THIS PROC
+//use one of the above 3 helper procs
+//you may override it, but do not modify the args
+/mob/proc/doUnEquip(obj/item/I, force, newloc, no_move, invdrop = TRUE) //Force overrides NODROP_1 for things like wizarditis and admin undress.
+													//Use no_move if the item is just gonna be immediately moved afterward
+													//Invdrop is used to prevent stuff in pockets dropping. only set to false if it's going to immediately be replaced
+	if(!I) //If there's nothing to drop, the drop is automatically succesfull. If(unEquip) should generally be used to check for NODROP_1.
 		return TRUE
 
-	if((I.flags & NODROP) && !force)
+	if((I.flags_1 & NODROP_1) && !force)
 		return FALSE
 
 	var/hand_index = get_held_index_of_item(I)
@@ -266,25 +323,19 @@
 		if(client)
 			client.screen -= I
 		I.layer = initial(I.layer)
+		I.plane = initial(I.plane)
 		I.appearance_flags &= ~NO_CLIENT_COLOR
-		I.forceMove(loc)
+		if(!no_move && !(I.flags_1 & DROPDEL_1))	//item may be moved/qdel'd immedietely, don't bother moving it
+			I.forceMove(newloc)
 		I.dropped(src)
 	return TRUE
 
-
-//Attemps to remove an object on a mob.  Will not move it to another area or such, just removes from the mob.
-/mob/proc/remove_from_mob(var/obj/item/I)
-	unEquip(I)
-	I.screen_loc = null
-	return TRUE
-
-
 //Outdated but still in use apparently. This should at least be a human proc.
 //Daily reminder to murder this - Remie.
-/mob/living/proc/get_equipped_items()
+/mob/living/proc/get_equipped_items(include_pockets = FALSE)
 	return
 
-/mob/living/carbon/get_equipped_items()
+/mob/living/carbon/get_equipped_items(include_pockets = FALSE)
 	var/list/items = list()
 	if(back)
 		items += back
@@ -292,9 +343,11 @@
 		items += head
 	if(wear_mask)
 		items += wear_mask
+	if(wear_neck)
+		items += wear_neck
 	return items
 
-/mob/living/carbon/human/get_equipped_items()
+/mob/living/carbon/human/get_equipped_items(include_pockets = FALSE)
 	var/list/items = ..()
 	if(belt)
 		items += belt
@@ -312,23 +365,39 @@
 		items += wear_suit
 	if(w_uniform)
 		items += w_uniform
+	if(include_pockets)
+		if(l_store)
+			items += l_store
+		if(r_store)
+			items += r_store
+		if(s_store)
+			items += s_store
 	return items
 
+/mob/living/proc/unequip_everything()
+	var/list/items = list()
+	items |= get_equipped_items()
+	for(var/I in items)
+		dropItemToGround(I)
+	drop_all_held_items()
 
 /obj/item/proc/equip_to_best_slot(var/mob/M)
 	if(src != M.get_active_held_item())
-		M << "<span class='warning'>You are not holding anything to equip!</span>"
+		to_chat(M, "<span class='warning'>You are not holding anything to equip!</span>")
 		return FALSE
 
 	if(M.equip_to_appropriate_slot(src))
 		M.update_inv_hands()
 		return TRUE
+	else
+		if(equip_delay_self)
+			return
 
 	if(M.s_active && M.s_active.can_be_inserted(src,1))	//if storage active insert there
 		M.s_active.handle_item_insertion(src)
 		return TRUE
 
-	var/obj/item/weapon/storage/S = M.get_inactive_held_item()
+	var/obj/item/storage/S = M.get_inactive_held_item()
 	if(istype(S) && S.can_be_inserted(src,1))	//see if we have box in other hand
 		S.handle_item_insertion(src)
 		return TRUE
@@ -345,10 +414,9 @@
 	S = M.get_item_by_slot(slot_back)	//else we put in backpack
 	if(istype(S) && S.can_be_inserted(src,1))
 		S.handle_item_insertion(src)
-		playsound(src.loc, "rustle", 50, 1, -5)
 		return TRUE
 
-	M << "<span class='warning'>You are unable to equip that!</span>"
+	to_chat(M, "<span class='warning'>You are unable to equip that!</span>")
 	return FALSE
 
 
@@ -378,7 +446,7 @@
 /mob/proc/change_number_of_hands(amt)
 	if(amt < held_items.len)
 		for(var/i in held_items.len to amt step -1)
-			unEquip(held_items[i])
+			dropItemToGround(held_items[i])
 	held_items.len = amt
 
 	if(hud_used)

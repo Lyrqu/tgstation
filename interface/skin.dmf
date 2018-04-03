@@ -1,4 +1,5 @@
 macro "default"
+<<<<<<< HEAD
 	elem 
 		name = "TAB"
 		command = ".winset \"mainwindow.macro=hotkeys mapwindow.map.focus=true input.background-color=#e0e0e0\""
@@ -842,48 +843,63 @@ macro "robot-hotkeys"
 		command = "F12"
 		is-disabled = false
 
+=======
+>>>>>>> pr/1
 
 menu "menu"
 	elem 
 		name = "&File"
 		command = ""
+<<<<<<< HEAD
 		category = ""
 		is-checked = false
 		can-check = false
 		group = ""
 		is-disabled = false
+=======
+>>>>>>> pr/1
 		saved-params = "is-checked"
 	elem 
 		name = "&Quick screenshot\tF2"
 		command = ".screenshot auto"
 		category = "&File"
+<<<<<<< HEAD
 		is-checked = false
 		can-check = false
 		group = ""
 		is-disabled = false
+=======
+>>>>>>> pr/1
 		saved-params = "is-checked"
 	elem 
 		name = "&Save screenshot as...\tShift+F2"
 		command = ".screenshot"
 		category = "&File"
+<<<<<<< HEAD
 		is-checked = false
 		can-check = false
 		group = ""
 		is-disabled = false
+=======
+>>>>>>> pr/1
 		saved-params = "is-checked"
 	elem 
 		name = ""
 		command = ""
 		category = "&File"
+<<<<<<< HEAD
 		is-checked = false
 		can-check = false
 		group = ""
 		is-disabled = false
+=======
+>>>>>>> pr/1
 		saved-params = "is-checked"
 	elem "reconnectbutton"
 		name = "&Reconnect"
 		command = ".reconnect"
 		category = "&File"
+<<<<<<< HEAD
 		is-checked = false
 		can-check = false
 		group = ""
@@ -951,33 +967,49 @@ menu "menu"
 		can-check = true
 		group = "size"
 		is-disabled = false
+=======
+		saved-params = "is-checked"
+	elem 
+		name = "&Quit\tAlt-F4"
+		command = ".quit"
+		category = "&File"
+>>>>>>> pr/1
 		saved-params = "is-checked"
 	elem 
 		name = "&Help"
 		command = ""
+<<<<<<< HEAD
 		category = ""
 		is-checked = false
 		can-check = false
 		group = ""
 		is-disabled = false
+=======
+>>>>>>> pr/1
 		saved-params = "is-checked"
 	elem 
 		name = "&Admin Help\tF1"
 		command = "adminhelp"
 		category = "&Help"
+<<<<<<< HEAD
 		is-checked = false
 		can-check = false
 		group = ""
 		is-disabled = false
+=======
+>>>>>>> pr/1
 		saved-params = "is-checked"
 	elem 
 		name = "&Hotkeys"
 		command = "hotkeys-help"
 		category = "&Help"
+<<<<<<< HEAD
 		is-checked = false
 		can-check = false
 		group = ""
 		is-disabled = false
+=======
+>>>>>>> pr/1
 		saved-params = "is-checked"
 
 
@@ -988,6 +1020,7 @@ window "mainwindow"
 		size = 640x440
 		anchor1 = none
 		anchor2 = none
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1021,12 +1054,20 @@ window "mainwindow"
 		macro = "macro"
 		menu = "menu"
 		on-close = ""
+=======
+		is-default = true
+		saved-params = "pos;size;is-minimized;is-maximized"
+		icon = 'icons\\ss13_64.png'
+		macro = "default"
+		menu = "menu"
+>>>>>>> pr/1
 	elem "split"
 		type = CHILD
 		pos = 3,0
 		size = 634x417
 		anchor1 = 0,0
 		anchor2 = 100,100
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1047,12 +1088,19 @@ window "mainwindow"
 		splitter = 50
 		show-splitter = true
 		lock = none
+=======
+		saved-params = "splitter"
+		left = "mapwindow"
+		right = "infowindow"
+		is-vert = true
+>>>>>>> pr/1
 	elem "input"
 		type = INPUT
-		pos = 5,420
-		size = 595x20
+		pos = 3,420
+		size = 517x20
 		anchor1 = 0,100
 		anchor2 = 100,100
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 10
 		font-style = ""
@@ -1072,11 +1120,19 @@ window "mainwindow"
 		is-password = false
 		no-command = false
 	elem "say"
+=======
+		background-color = #d3b5b5
+		is-default = true
+		border = sunken
+		saved-params = "command"
+	elem "saybutton"
+>>>>>>> pr/1
 		type = BUTTON
 		pos = 600,420
-		size = 37x20
+		size = 40x20
 		anchor1 = 100,100
 		anchor2 = none
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1098,6 +1154,31 @@ window "mainwindow"
 		stretch = false
 		is-checked = false
 		group = ""
+=======
+		saved-params = "is-checked"
+		text = "Chat"
+		command = ".winset \"saybutton.is-checked=true ? input.command=\"!say \\\"\" : input.command=\"\"saybutton.is-checked=true ? mebutton.is-checked=false\"\"saybutton.is-checked=true ? oocbutton.is-checked=false\""
+		button-type = pushbox
+	elem "oocbutton"
+		type = BUTTON
+		pos = 520,420
+		size = 40x20
+		anchor1 = 100,100
+		anchor2 = none
+		saved-params = "is-checked"
+		text = "OOC"
+		command = ".winset \"oocbutton.is-checked=true ? input.command=\"!ooc \\\"\" : input.command=\"\"oocbutton.is-checked=true ? mebutton.is-checked=false\"\"oocbutton.is-checked=true ? saybutton.is-checked=false\""
+		button-type = pushbox
+	elem "mebutton"
+		type = BUTTON
+		pos = 560,420
+		size = 40x20
+		anchor1 = 100,100
+		anchor2 = none
+		saved-params = "is-checked"
+		text = "Me"
+		command = ".winset \"mebutton.is-checked=true ? input.command=\"!me \\\"\" : input.command=\"\"mebutton.is-checked=true ? saybutton.is-checked=false\"\"mebutton.is-checked=true ? oocbutton.is-checked=false\""
+>>>>>>> pr/1
 		button-type = pushbox
 	elem "asset_cache_browser"
 		type = BROWSER
@@ -1105,6 +1186,7 @@ window "mainwindow"
 		size = 200x200
 		anchor1 = none
 		anchor2 = none
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1125,12 +1207,17 @@ window "mainwindow"
 		use-title = false
 		on-show = ""
 		on-hide = ""
+=======
+		is-visible = false
+		saved-params = ""
+>>>>>>> pr/1
 	elem "tooltip"
 		type = BROWSER
 		pos = 0,0
 		size = 999x999
 		anchor1 = none
 		anchor2 = none
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1151,6 +1238,10 @@ window "mainwindow"
 		use-title = false
 		on-show = ""
 		on-hide = ""
+=======
+		is-visible = false
+		saved-params = ""
+>>>>>>> pr/1
 
 window "mapwindow"
 	elem "mapwindow"
@@ -1159,6 +1250,7 @@ window "mapwindow"
 		size = 640x480
 		anchor1 = none
 		anchor2 = none
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1192,6 +1284,10 @@ window "mapwindow"
 		macro = ""
 		menu = ""
 		on-close = ""
+=======
+		saved-params = "pos;size;is-minimized;is-maximized"
+		is-pane = true
+>>>>>>> pr/1
 	elem "map"
 		type = MAP
 		pos = 0,0
@@ -1200,8 +1296,8 @@ window "mapwindow"
 		anchor2 = 100,100
 		font-family = "Arial"
 		font-size = 7
-		font-style = ""
 		text-color = none
+<<<<<<< HEAD
 		background-color = none
 		is-visible = true
 		is-disabled = false
@@ -1219,6 +1315,11 @@ window "mapwindow"
 		on-show = ""
 		on-hide = ""
 		style = ""
+=======
+		is-default = true
+		saved-params = "icon-size"
+		zoom-mode = distort
+>>>>>>> pr/1
 
 window "infowindow"
 	elem "infowindow"
@@ -1227,6 +1328,7 @@ window "infowindow"
 		size = 640x480
 		anchor1 = none
 		anchor2 = none
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1260,12 +1362,17 @@ window "infowindow"
 		macro = ""
 		menu = ""
 		on-close = ""
+=======
+		saved-params = "pos;size;is-minimized;is-maximized"
+		is-pane = true
+>>>>>>> pr/1
 	elem "info"
 		type = CHILD
 		pos = 0,30
 		size = 640x445
 		anchor1 = 0,0
 		anchor2 = 100,100
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1286,12 +1393,19 @@ window "infowindow"
 		splitter = 50
 		show-splitter = true
 		lock = none
+=======
+		saved-params = "splitter"
+		left = "statwindow"
+		right = "outputwindow"
+		is-vert = false
+>>>>>>> pr/1
 	elem "changelog"
 		type = BUTTON
 		pos = 16,5
 		size = 104x20
 		anchor1 = 3,0
 		anchor2 = 19,0
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1306,6 +1420,9 @@ window "infowindow"
 		right-click = false
 		saved-params = "is-checked"
 		on-size = ""
+=======
+		saved-params = "is-checked"
+>>>>>>> pr/1
 		text = "Changelog"
 		image = ""
 		command = "changelog"
@@ -1320,6 +1437,7 @@ window "infowindow"
 		size = 100x20
 		anchor1 = 19,0
 		anchor2 = 34,0
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1334,6 +1452,9 @@ window "infowindow"
 		right-click = false
 		saved-params = "is-checked"
 		on-size = ""
+=======
+		saved-params = "is-checked"
+>>>>>>> pr/1
 		text = "Rules"
 		image = ""
 		command = "rules"
@@ -1348,6 +1469,7 @@ window "infowindow"
 		size = 100x20
 		anchor1 = 34,0
 		anchor2 = 50,0
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1362,6 +1484,9 @@ window "infowindow"
 		right-click = false
 		saved-params = "is-checked"
 		on-size = ""
+=======
+		saved-params = "is-checked"
+>>>>>>> pr/1
 		text = "Wiki"
 		image = ""
 		command = "wiki"
@@ -1376,6 +1501,7 @@ window "infowindow"
 		size = 100x20
 		anchor1 = 50,0
 		anchor2 = 66,0
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1390,20 +1516,27 @@ window "infowindow"
 		right-click = false
 		saved-params = "is-checked"
 		on-size = ""
+=======
+		saved-params = "is-checked"
+>>>>>>> pr/1
 		text = "Forum"
 		image = ""
 		command = "forum"
+<<<<<<< HEAD
 		is-flat = false
 		stretch = false
 		is-checked = false
 		group = ""
 		button-type = pushbutton
+=======
+>>>>>>> pr/1
 	elem "github"
 		type = BUTTON
 		pos = 420,5
 		size = 100x20
 		anchor1 = 66,0
 		anchor2 = 81,0
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1426,12 +1559,18 @@ window "infowindow"
 		is-checked = false
 		group = ""
 		button-type = pushbutton
+=======
+		saved-params = "is-checked"
+		text = "Github"
+		command = "github"
+>>>>>>> pr/1
 	elem "report-issue"
 		type = BUTTON
 		pos = 520,5
 		size = 100x20
 		anchor1 = 81,0
 		anchor2 = 97,0
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1454,6 +1593,11 @@ window "infowindow"
 		is-checked = false
 		group = ""
 		button-type = pushbutton
+=======
+		saved-params = "is-checked"
+		text = "Report Issue"
+		command = "report-issue"
+>>>>>>> pr/1
 
 window "outputwindow"
 	elem "outputwindow"
@@ -1462,6 +1606,7 @@ window "outputwindow"
 		size = 640x480
 		anchor1 = none
 		anchor2 = none
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1495,12 +1640,28 @@ window "outputwindow"
 		macro = ""
 		menu = ""
 		on-close = ""
+=======
+		saved-params = "pos;size;is-minimized;is-maximized"
+		is-pane = true
+	elem "browseroutput"
+		type = BROWSER
+		pos = 0,0
+		size = 640x480
+		anchor1 = 0,0
+		anchor2 = 100,100
+		background-color = #ffffff
+		is-visible = false
+		is-disabled = true
+		saved-params = ""
+		auto-format = false
+>>>>>>> pr/1
 	elem "output"
 		type = OUTPUT
 		pos = 0,0
 		size = 640x480
 		anchor1 = 0,0
 		anchor2 = 100,100
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1521,6 +1682,10 @@ window "outputwindow"
 		enable-http-images = false
 		max-lines = 1000
 		image = ""
+=======
+		is-default = true
+		saved-params = ""
+>>>>>>> pr/1
 
 window "statwindow"
 	elem "statwindow"
@@ -1529,6 +1694,7 @@ window "statwindow"
 		size = 640x480
 		anchor1 = none
 		anchor2 = none
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1562,12 +1728,17 @@ window "statwindow"
 		macro = ""
 		menu = ""
 		on-close = ""
+=======
+		saved-params = "pos;size;is-minimized;is-maximized"
+		is-pane = true
+>>>>>>> pr/1
 	elem "stat"
 		type = INFO
 		pos = 0,0
 		size = 640x480
 		anchor1 = 0,0
 		anchor2 = 100,100
+<<<<<<< HEAD
 		font-family = ""
 		font-size = 0
 		font-style = ""
@@ -1595,4 +1766,8 @@ window "statwindow"
 		on-tab = ""
 		prefix-color = none
 		suffix-color = none
+=======
+		is-default = true
+		saved-params = ""
+>>>>>>> pr/1
 

@@ -10,18 +10,25 @@
 
 	hardware_flag = PROGRAM_LAPTOP
 	max_hardware_size = 2
-	w_class = 3
+	w_class = WEIGHT_CLASS_NORMAL
 
-	flags = HANDSLOW // No running around with open laptops in hands.
+	// No running around with open laptops in hands.
+	flags_2 = SLOWS_WHILE_IN_HAND_2
 
 	screen_on = 0 		// Starts closed
-	var/start_open = 1	// unless this var is set to 1
+	var/start_open = TRUE	// unless this var is set to 1
 	var/icon_state_closed = "laptop-closed"
-	var/w_class_open = 4
-	var/slowdown_open = 1
+	var/w_class_open = WEIGHT_CLASS_BULKY
+	var/slowdown_open = TRUE
 
-/obj/item/device/modular_computer/laptop/New()
+/obj/item/device/modular_computer/laptop/examine(mob/user)
 	..()
+	if(screen_on)
+		to_chat(user, "<span class='notice'>Alt-click to close it.</span>")
+
+/obj/item/device/modular_computer/laptop/Initialize()
+	. = ..()
+
 	if(start_open && !screen_on)
 		toggle_open()
 
@@ -46,6 +53,7 @@
 	try_toggle_open(usr)
 
 /obj/item/device/modular_computer/laptop/MouseDrop(obj/over_object, src_location, over_location)
+	. = ..()
 	if(over_object == usr || over_object == src)
 		try_toggle_open(usr)
 	else if(istype(over_object, /obj/screen/inventory/hand))
@@ -58,11 +66,11 @@
 			M.put_in_hand(src, H.held_index)
 
 /obj/item/device/modular_computer/laptop/attack_hand(mob/user)
+	. = ..()
+	if(.)
+		return
 	if(screen_on && isturf(loc))
 		return attack_self(user)
-
-	return ..()
-
 
 /obj/item/device/modular_computer/laptop/proc/try_toggle_open(mob/living/user)
 	if(issilicon(user))
@@ -83,11 +91,11 @@
 
 /obj/item/device/modular_computer/laptop/proc/toggle_open(mob/living/user=null)
 	if(screen_on)
-		user << "<span class='notice'>You close \the [src].</span>"
+		to_chat(user, "<span class='notice'>You close \the [src].</span>")
 		slowdown = initial(slowdown)
 		w_class = initial(w_class)
 	else
-		user << "<span class='notice'>You open \the [src].</span>"
+		to_chat(user, "<span class='notice'>You open \the [src].</span>")
 		slowdown = slowdown_open
 		w_class = w_class_open
 
@@ -98,4 +106,4 @@
 
 // Laptop frame, starts empty and closed.
 /obj/item/device/modular_computer/laptop/buildable
-	start_open = 0
+	start_open = FALSE

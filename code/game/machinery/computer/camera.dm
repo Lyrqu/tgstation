@@ -3,11 +3,19 @@
 	desc = "Used to access the various cameras on the station."
 	icon_screen = "cameras"
 	icon_keyboard = "security_key"
-	circuit = /obj/item/weapon/circuitboard/computer/security
+	circuit = /obj/item/circuitboard/computer/security
 	var/last_pic = 1
-	var/list/network = list("SS13")
+	var/list/network = list("ss13")
 	var/mapping = 0//For the overview file, interesting bit of code.
 	var/list/watchers = list() //who's using the console, associated with the camera they're on.
+
+	light_color = LIGHT_COLOR_RED
+
+/obj/machinery/computer/security/Initialize()
+	. = ..()
+	for(var/i in network)
+		network -= i
+		network += lowertext(i)
 
 /obj/machinery/computer/security/check_eye(mob/user)
 	if( (stat & (NOPOWER|BROKEN)) || user.incapacitated() || user.eye_blind )
@@ -43,13 +51,16 @@
 	return ..()
 
 /obj/machinery/computer/security/attack_hand(mob/user)
+	. = ..()
+	if(.)
+		return
 	if(stat)
 		return
 	if (!network)
 		throw EXCEPTION("No camera network")
 		user.unset_machine()
 		return
-	if (!(istype(network,/list)))
+	if (!(islist(network)))
 		throw EXCEPTION("Camera network is not a list")
 		user.unset_machine()
 		return
@@ -68,6 +79,7 @@
 		if(!(user in watchers))
 			user.unset_machine() // no usable camera on the network, we disconnect the user from the computer.
 			return
+	playsound(src, 'sound/machines/terminal_prompt.ogg', 25, 0)
 	use_camera_console(user)
 
 /obj/machinery/computer/security/proc/use_camera_console(mob/user)
@@ -77,12 +89,14 @@
 		return
 	if(!t)
 		user.unset_machine()
+		playsound(src, 'sound/machines/terminal_off.ogg', 25, 0)
 		return
 
 	var/obj/machinery/camera/C = camera_list[t]
 
 	if(t == "Cancel")
 		user.unset_machine()
+		playsound(src, 'sound/machines/terminal_off.ogg', 25, 0)
 		return
 	if(C)
 		var/camera_fail = 0
@@ -100,23 +114,26 @@
 			user.unset_machine()
 			return 0
 
+		playsound(src, 'sound/machines/terminal_prompt_confirm.ogg', 25, 0)
 		if(isAI(user))
 			var/mob/living/silicon/ai/A = user
 			A.eyeobj.setLoc(get_turf(C))
 			A.client.eye = A.eyeobj
 		else
 			user.reset_perspective(C)
+			user.overlay_fullscreen("flash", /obj/screen/fullscreen/flash/static)
+			user.clear_fullscreen("flash", 5)
 		watchers[user] = C
 		use_power(50)
-		addtimer(src, "use_camera_console", 5, FALSE, user)
+		addtimer(CALLBACK(src, .proc/use_camera_console, user), 5)
 	else
 		user.unset_machine()
 
 //returns the list of cameras accessible from this computer
 /obj/machinery/computer/security/proc/get_available_cameras()
 	var/list/L = list()
-	for (var/obj/machinery/camera/C in cameranet.cameras)
-		if((z > ZLEVEL_SPACEMAX || C.z > ZLEVEL_SPACEMAX) && (C.z != z))//if on away mission, can only recieve feed from same z_level cameras
+	for (var/obj/machinery/camera/C in GLOB.cameranet.cameras)
+		if((is_away_level(z) || is_away_level(C.z)) && (C.z != z))//if on away mission, can only recieve feed from same z_level cameras
 			continue
 		L.Add(C)
 
@@ -126,12 +143,10 @@
 	D["Cancel"] = "Cancel"
 	for(var/obj/machinery/camera/C in L)
 		if(!C.network)
-			spawn(0)
-				throw EXCEPTION("Camera in a cameranet has no camera network")
+			stack_trace("Camera in a cameranet has no camera network")
 			continue
-		if(!(istype(C.network,/list)))
-			spawn(0)
-				throw EXCEPTION("Camera in a cameranet has a non-list camera network")
+		if(!(islist(C.network)))
+			stack_trace("Camera in a cameranet has a non-list camera network")
 			continue
 		var/list/tempnetwork = C.network&network
 		if(tempnetwork.len)
@@ -144,9 +159,11 @@
 	icon = 'icons/obj/stationobjs.dmi'
 	icon_state = "telescreen"
 	network = list("thunder")
-	density = 0
+	density = FALSE
 	circuit = null
 	clockwork = TRUE //it'd look very weird
+
+	light_power = 0
 
 /obj/machinery/computer/security/telescreen/update_icon()
 	icon_state = initial(icon_state)
@@ -160,7 +177,7 @@
 	icon = 'icons/obj/status_display.dmi'
 	icon_state = "entertainment"
 	network = list("thunder")
-	density = 0
+	density = FALSE
 	circuit = null
 
 /obj/machinery/computer/security/wooden_tv
@@ -177,5 +194,5 @@
 	desc = "Used to access the various cameras on the outpost."
 	icon_screen = "mining"
 	icon_keyboard = "mining_key"
-	network = list("MINE")
-	circuit = /obj/item/weapon/circuitboard/computer/mining
+	network = list("mine")
+	circuit = /obj/item/circuitboard/computer/mining

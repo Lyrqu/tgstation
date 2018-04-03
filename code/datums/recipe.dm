@@ -35,17 +35,17 @@
 
 /datum/recipe
 	var/list/reagents_list // example:  = list("berryjuice" = 5) // do not list same reagent twice
-	var/list/items // example: =list(/obj/item/weapon/crowbar, /obj/item/weapon/welder) // place /foo/bar before /foo
-	var/result //example: = /obj/item/weapon/reagent_containers/food/snacks/donut
+	var/list/items // example: =list(/obj/item/crowbar, /obj/item/welder) // place /foo/bar before /foo
+	var/result //example: = /obj/item/reagent_containers/food/snacks/donut
 	var/time = 100 // 1/10 part of second
 
 
 /datum/recipe/proc/check_reagents(datum/reagents/avail_reagents) //1=precisely, 0=insufficiently, -1=superfluous
 	. = 1
-	for (var/r_r in reagents)
+	for (var/r_r in reagents_list)
 		var/aval_r_amnt = avail_reagents.get_reagent_amount(r_r)
-		if (!(abs(aval_r_amnt - reagents[r_r])<0.5)) //if NOT equals
-			if (aval_r_amnt>reagents[r_r])
+		if (!(abs(aval_r_amnt - reagents_list[r_r])<0.5)) //if NOT equals
+			if (aval_r_amnt>reagents_list[r_r])
 				. = -1
 			else
 				return 0

@@ -1,4 +1,4 @@
-/obj/machinery/atmospherics/pipe/heat_exchanging/
+/obj/machinery/atmospherics/pipe/heat_exchanging
 	icon = 'icons/obj/atmospherics/pipes/heat.dmi'
 	level = 2
 	var/initialize_directions_he
@@ -11,7 +11,7 @@
 
 /obj/machinery/atmospherics/pipe/heat_exchanging/New()
 	..()
-	color = "#404040"
+	add_atom_colour("#404040", FIXED_COLOUR_PRIORITY)
 
 /obj/machinery/atmospherics/pipe/heat_exchanging/can_be_node(obj/machinery/atmospherics/pipe/heat_exchanging/target)
 	if(!istype(target))
@@ -31,7 +31,7 @@
 
 	var/turf/T = loc
 	if(istype(T))
-		if(istype(T, /turf/open/floor/plating/lava))
+		if(islava(T))
 			environment_temperature = 5000
 		else if(T.blocks_air)
 			environment_temperature = T.temperature
@@ -87,4 +87,4 @@
 		if(pipe_air.temperature > heat_limit + 1)
 			for(var/m in buckled_mobs)
 				var/mob/living/buckled_mob = m
-				buckled_mob.apply_damage(4 * log(pipe_air.temperature - heat_limit), BURN, "chest")
+				buckled_mob.apply_damage(4 * log(pipe_air.temperature - heat_limit), BURN, BODY_ZONE_CHEST)

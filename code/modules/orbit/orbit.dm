@@ -19,8 +19,6 @@
 	Check()
 	lock = _lock
 
-
-
 //do not qdel directly, use stop_orbit on the orbiter. (This way the orbiter can bind to the orbit stopping)
 /datum/orbit/Destroy(force = FALSE)
 	SSorbit.processing -= src
@@ -33,9 +31,11 @@
 			if (!orbiting.orbiters.len)//we are the last orbit, delete the list
 				orbiting.orbiters = null
 		orbiting = null
-	..()
+	return ..()
 
-/datum/orbit/proc/Check(turf/targetloc)
+/datum/orbit/proc/Check(turf/targetloc, list/checked_already = list())
+	//Avoid infinite loops for people who end up orbiting themself through another orbiter
+	checked_already[src] = TRUE
 	if (!orbiter)
 		qdel(src)
 		return
@@ -45,16 +45,26 @@
 	if (!orbiter.orbiting) //admin wants to stop the orbit.
 		orbiter.orbiting = src //set it back to us first
 		orbiter.stop_orbit()
+	var/atom/movable/AM = orbiting
+	if(istype(AM) && AM.orbiting && AM.orbiting.orbiting == orbiter)
+		orbiter.stop_orbit()
+		return
 	lastprocess = world.time
 	if (!targetloc)
 		targetloc = get_turf(orbiting)
 	if (!targetloc || (!lock && orbiter.loc != lastloc && orbiter.loc != targetloc))
 		orbiter.stop_orbit()
 		return
-
 	orbiter.loc = targetloc
+	orbiter.update_parallax_contents()
+	orbiter.update_light()
 	lastloc = orbiter.loc
-
+	for(var/other_orbit in orbiter.orbiters)
+		var/datum/orbit/OO = other_orbit
+		//Skip if checked already
+		if(checked_already[OO])
+			continue
+		OO.Check(targetloc, checked_already)
 
 /atom/movable/var/datum/orbit/orbiting = null
 /atom/var/list/orbiters = null
@@ -98,17 +108,8 @@
 	SpinAnimation(0,0)
 	qdel(orbiting)
 
-/atom/movable/Moved(atom/OldLoc, Dir)
-	..()
-	if (orbiters)
-		for (var/thing in orbiters)
-			var/datum/orbit/O = thing
-			O.Check()
-	if (orbiting)
-		orbiting.Check()
-
 /atom/Destroy(force = FALSE)
-	..()
+	. = ..()
 	if (orbiters)
 		for (var/thing in orbiters)
 			var/datum/orbit/O = thing
@@ -116,6 +117,14 @@
 				O.orbiter.stop_orbit()
 
 /atom/movable/Destroy(force = FALSE)
-	..()
+	. = ..()
 	if (orbiting)
 		stop_orbit()
+
+/atom/movable/proc/transfer_observers_to(atom/movable/target)
+	if(orbiters)
+		for(var/thing in orbiters)
+			var/datum/orbit/O = thing
+			if(O.orbiter && isobserver(O.orbiter))
+				var/mob/dead/observer/D = O.orbiter
+				D.ManualFollow(target)

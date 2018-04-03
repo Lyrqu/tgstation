@@ -130,8 +130,9 @@
 	blobpwrdisplay.name = "blob power"
 	blobpwrdisplay.icon_state = "block"
 	blobpwrdisplay.screen_loc = ui_health
-	blobpwrdisplay.mouse_opacity = 0
+	blobpwrdisplay.mouse_opacity = MOUSE_OPACITY_TRANSPARENT
 	blobpwrdisplay.layer = ABOVE_HUD_LAYER
+	blobpwrdisplay.plane = ABOVE_HUD_PLANE
 	infodisplay += blobpwrdisplay
 
 	healths = new /obj/screen/healths/blob()
